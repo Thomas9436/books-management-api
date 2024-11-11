@@ -1,5 +1,5 @@
 const express = require('express');
-const booksManagementRoutes = require('./booksManagement');
+const booksManagementRoutes = require('../routes/booksManagement');
 
 const router = express.Router();
 
