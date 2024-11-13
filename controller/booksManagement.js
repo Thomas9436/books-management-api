@@ -1,5 +1,5 @@
 // controllers/bookController.js
-const Book = require('../models/bookModel');
+const Book = require('../model/booksManagement');
 
 // Créer un livre
 exports.createBook = async (req, res) => {

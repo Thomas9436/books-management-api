@@ -3,6 +3,6 @@ const booksManagementRoutes = require('../routes/booksManagement');
 
 const router = express.Router();
 
-router.use('/books-manage', booksManagementRoutes);
+router.use(booksManagementRoutes);
 
 module.exports = router;

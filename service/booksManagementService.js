@@ -1,6 +1,6 @@
 // book-service/services/bookAvailabilityService.js
-const mqttClient = require('../config/mqttConfig');
-const Book = require('../models/bookModel');
+const mqttClient = require('../config/mqttClient');
+const Book = require('../model/booksManagement');
 
 mqttClient.on('connect', () => {
     mqttClient.subscribe('book/borrowed');
