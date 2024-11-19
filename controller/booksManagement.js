@@ -1,11 +1,9 @@
-// controllers/bookController.js
-const Book = require('../model/booksManagement');
+const bookManagementService = require('../services/booksManagementService');
 
 // Créer un livre
 exports.createBook = async (req, res) => {
-    const book = new Book(req.body);
     try {
-        const savedBook = await book.save();
+        const savedBook = await bookManagementService.createBook(req.body);
         res.status(201).json(savedBook);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -15,7 +13,7 @@ exports.createBook = async (req, res) => {
 // Lire tous les livres
 exports.getAllBooks = async (req, res) => {
     try {
-        const books = await Book.find();
+        const books = await bookManagementService.getAllBooks();
         res.json(books);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -25,7 +23,7 @@ exports.getAllBooks = async (req, res) => {
 // Lire un livre par ID
 exports.getBookById = async (req, res) => {
     try {
-        const book = await Book.findById(req.params.id);
+        const book = await bookManagementService.getBookById(req.params.id);
         if (!book) return res.status(404).json({ message: 'Livre non trouvé' });
         res.json(book);
     } catch (error) {
@@ -36,7 +34,7 @@ exports.getBookById = async (req, res) => {
 // Mettre à jour un livre
 exports.updateBook = async (req, res) => {
     try {
-        const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updatedBook = await bookManagementService.updateBook(req.params.id, req.body);
         if (!updatedBook) return res.status(404).json({ message: 'Livre non trouvé' });
         res.json(updatedBook);
     } catch (error) {
@@ -47,7 +45,7 @@ exports.updateBook = async (req, res) => {
 // Supprimer un livre
 exports.deleteBook = async (req, res) => {
     try {
-        const deletedBook = await Book.findByIdAndDelete(req.params.id);
+        const deletedBook = await bookManagementService.deleteBook(req.params.id);
         if (!deletedBook) return res.status(404).json({ message: 'Livre non trouvé' });
         res.json({ message: 'Livre supprimé' });
     } catch (error) {
