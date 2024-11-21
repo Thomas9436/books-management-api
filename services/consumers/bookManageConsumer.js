@@ -1,19 +1,18 @@
-const connectRabbitMQ = require('../clients/rabbitmq');
-const { handleCheckBookAvailability, handleBookReturned } = require('../booksManagementService');
+const connectRabbitMQ = require('../../clients/rabbitmq');
+const { handleCheckBookAvailability } = require('../booksManagementService');
 const { publishBookManageResponse } = require('../producers/bookManageProducer');
 
 async function consumeBookManageEvents() {
     const channel = await connectRabbitMQ();
 
-    const queue = 'manage-service..queue';
-    const exchange = 'manage.responses';
+    const queue = 'book-manage-events.queue';
+    const exchange = 'book-manage.events';
 
     await channel.assertExchange(exchange, 'topic', { durable: true });
     await channel.assertQueue(queue, { durable: true });
-    await channel.bindQueue(queue, exchange, 'manage.response.*'); // Liaison pour toutes les réponses
+    await channel.bindQueue(queue, exchange, 'book.*'); // Liaison pour toutes les réponses
 
-
-     console.log(`Waiting for book-manage responses in queue: ${queue}...`);
+    console.log(`Waiting for book-manage responses in queue: ${queue}...`);
 
     channel.consume(queue, async (msg) => {
         if (msg) {
@@ -30,12 +29,8 @@ async function consumeBookManageEvents() {
 
             let response;
             switch (event.event) {
-                case 'borrow.check-book-availability':
+                case 'book.check-book-availability':
                     response = await handleCheckBookAvailability(payload, correlationId);
-                    break;
-                case 'borrow.book-returned':
-                    await handleBookReturned(payload);
-                    response = null; // Pas de réponse nécessaire pour cet événement
                     break;
                 default:
                     console.warn(`Unhandled event: ${event.event}`);
@@ -43,7 +38,7 @@ async function consumeBookManageEvents() {
             }
 
             // Publiez une réponse si nécessaire
-            //Produit un évenement BookManageResponse 
+            //Produit un évenement BookManageResponse
             if (response) {
                 await publishBookManageResponse(channel, response);
             }

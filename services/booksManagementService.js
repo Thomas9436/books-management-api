@@ -32,35 +32,18 @@ exports.handleCheckBookAvailability = async (payload) => {
         const book = await Book.findById(payload.bookId);
         const isAvailable = book && book.status === 'available';
 
+        const { correlationId } = payload;
+
         return {
+            correlationId,
             status: isAvailable ? 'success' : 'error',
-            message: isAvailable ? 'Book is available.' : 'Book is not available.',
+            message: isAvailable ? 'Book is available.' : 'Book is not available.'
         };
     } catch (error) {
         console.error('Error in handleCheckBookAvailability:', error.message);
         return {
             status: 'error',
-            message: 'Error while checking book availability.',
+            message: 'Error while checking book availability.'
         };
-    }
-};
-
-// Mettre à jour le statut du livre après un retour
-// Gestion de l'événement `borrow.book-returned`
-exports.handleBookReturned = async (payload) => {
-    try {
-        const { bookId } = payload;
-
-        // Mettre à jour le statut du livre à "available"
-        const updatedBook = await Book.findByIdAndUpdate(bookId, { status: 'available' }, { new: true });
-
-        if (!updatedBook) {
-            console.error(`Book ${bookId} not found.`);
-            return;
-        }
-
-        console.log(`Book ${bookId} status updated to "available".`);
-    } catch (error) {
-        console.error('Error in handleBookReturned:', error.message);
     }
 };

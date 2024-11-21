@@ -6,11 +6,17 @@ const app = express();
 require('dotenv').config();
 const connectDB = require('./database/db');
 const routes = require('./routes/index');
+const { consumeBookManageEvents } = require('./services/consumers/bookManageConsumer');
 
 connectDB();
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
+
+// Lancement du consommateur après connexion
+consumeBookManageEvents().catch((error) => {
+    console.error('Erreur lors du démarrage du consommateur de gestion des livres:', error.message);
+});
 
 app.use(
     cors({
